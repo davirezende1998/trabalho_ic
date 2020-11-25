@@ -14,6 +14,7 @@ seed(1)
 
 #%% NÓ
 class Sala:
+    #construtor
     def __init__(self, id, comprimento):
         self.id = id
         self.comprimento = comprimento
@@ -46,6 +47,7 @@ class Sala:
         
 #%% ARESTA
 class Trafego:
+    #construtor
     def __init__(self, id, sala_A, sala_B, media_trafego):
         self.id = id
         self.sala_A = sala_A
@@ -76,8 +78,9 @@ class Trafego:
     def setMediaTrafego(self, media_trafego):
         self.media_trafego = media_trafego
 
-#%% GRAFO
+#%% GRAFO 
 class Corredor():
+    #construtor
     def __init__(self):
         self.salas = []
         self.trafegos = []
@@ -100,6 +103,7 @@ class Corredor():
         if self.buscarTrafego(id) is None:
             self.trafegos.append(Trafego(id, sala_A, sala_B, media_trafego))
 
+    #algoritmo construtivo guloso que gera uma solucao inicial-----------------------------------------
     def algoritmoConstrutivo(self):
         #comprimento de cada lado do corredor
         comp_lado_cima = 0
@@ -501,7 +505,9 @@ class Corredor():
         
         custo_total = corredor.recalculaCusto(lado_cima, lado_baixo)
         return lado_cima, lado_baixo, custo_total
+        #---------------------------------------------------------------------------------------------------
     
+    #funcao que recebe como parametros duas disposicoes de corredores e calcula o custo total
     def recalculaCusto(self, lado_cima, lado_baixo):
         comp_lado_cima = 0
         comp_lado_baixo = 0
@@ -547,6 +553,7 @@ class Corredor():
                 n += 1
         return custo_temp
     
+    #funcao que implementa a busca local. Movimento: troca dois elementos de posicao
     def buscaLocal(self, lado_cima, lado_baixo, custo_total):
         i=0
         while i < len(lado_cima):
@@ -610,6 +617,7 @@ class Corredor():
             
         return lado_cima, lado_baixo, custo_total
 
+    #funcao que aplica a perturbacao em um otimo local, para explorarmos novas regioes no espaco de busca
     def perturbacao(self, lado_cima, lado_baixo): #2 swap-moves, 1 interchange move     
         #swap moves
         lado = random.randint(1, 2) #sorteia em qual lado vamos mexer/1 eh cima, 2 eh baixo
@@ -713,8 +721,11 @@ def leitura(nome_arquivo, corredor):
     arquivo.close()
     return True
 #%% INSTÂNCIAS
-nomes_arq = ["CAP_n_60_d_30_L_30_2","CAP_n_60_d_30_L_30_3","CAP_n_60_d_30_L_40_1",
-"CAP_n_60_d_30_L_40_2","CAP_n_60_d_30_L_40_3","CAP_n_60_d_30_L_50_1","CAP_n_60_d_30_L_50_2",
+#nessa lista devem ser colocados os nomes dos arquivos instancias a serem lidos
+nomes_arq = ["S10","S11","A15","QAP_sko42_01_n","QAP_sko42_02_n","QAP_sko42_03_n", "QAP_sko42_04_n","QAP_sko42_05_n",
+"QAP_sko49_01_n","QAP_sko49_02_n","QAP_sko49_03_n","QAP_sko49_04_n","QAP_sko49_05_n","QAP_sko56_01_n","QAP_sko56_02_n",
+"QAP_sko56_03_n","QAP_sko56_04_n","QAP_sko56_05_n","CAP_n_60_d_30_L_30_1","CAP_n_60_d_30_L_30_2","CAP_n_60_d_30_L_30_3",
+"CAP_n_60_d_30_L_40_1","CAP_n_60_d_30_L_40_2","CAP_n_60_d_30_L_40_3","CAP_n_60_d_30_L_50_1","CAP_n_60_d_30_L_50_2",
 "CAP_n_60_d_30_L_50_3","CAP_n_60_d_30_L_60_1","CAP_n_60_d_30_L_60_2","CAP_n_60_d_30_L_60_3",
 "CAP_n_60_d_60_L_30_1","CAP_n_60_d_60_L_30_2","CAP_n_60_d_60_L_30_3","CAP_n_60_d_60_L_40_1",
 "CAP_n_60_d_60_L_40_2","CAP_n_60_d_60_L_40_3","CAP_n_60_d_60_L_50_1","CAP_n_60_d_60_L_50_2",
@@ -736,25 +747,16 @@ while opcao_analise != str(3):
     while teste:
         opcao_analise = input("Opção: ")
         if opcao_analise != "1" and opcao_analise != "2":
-            print("Digite (1/2/3).")
+            print("Digite (1/2).")
         else:
             teste = False
 
     if opcao_analise == "1":
-        ts_constr = [] #tempo de execução, de cada instância, do algoritmo construtivo
-        ts_bl = [] #tempo de execução, de cada instância, da busca local
-        ts_total = [] #soma, de cada instância, dos tempos anteriores
-        custos_constr = [] #custo, de cada instância, do algoritmo construtivo
-        custos_bl = [] #custo, de cada instância, da busca local
-        
-        #davi criou para o ils
-        tempos= []
+        #lista para armazenar os tempos e os custos medidos para uma instancia
         custos = []
-        
         #disposição, de cada instância, da solução do algoritmo construtivo
         disps_cima_constr = []
         disps_baixo_constr = []
-        
         #disposição, de cada instância, da solução da busca local
         disps_cima_bl = []
         disps_baixo_bl = []
@@ -768,10 +770,8 @@ while opcao_analise != str(3):
                 except:
                     print("\nArquivo '" + nomes_arq[i] + "' inexistente!")
                     nomes_arq.remove(nomes_arq[i])
-                    #ns.remove(ns[i])
                     num_insts -= 1
-                    
-            t_inicial_ils = time.time()
+            
             #instancia a estrutura de grafo
             corredor = Corredor()
             
@@ -779,13 +779,12 @@ while opcao_analise != str(3):
                 print("\nErro na leitura do arquivo! Verifique o arquivo de entrada.")
             
             else:
+                #comeca a medir o tempo do ils
+                t_inicial_ils = time.time()
                 print("\nInstância '" + nomes_arq[i] + "' algoritmo construtivo...")
                 #execução do algoritmo construtivo
-                t_i = time.time()
                 lado_cima, lado_baixo, custo_constr = corredor.algoritmoConstrutivo()
-                t_f = time.time()
                 print("Concluído!")
-                t_constr = t_f-t_i
                 solucao_cima_constr = []
                 solucao_baixo_constr = []
                 
@@ -799,18 +798,13 @@ while opcao_analise != str(3):
                 print(solucao_cima_constr)
                 print(solucao_baixo_constr)
                 print("custo = " + str(custo_constr))
-                
-                
                 disps_cima_constr.append(solucao_cima_constr)
                 disps_baixo_constr.append(solucao_baixo_constr)
                 
                 print("\nInstância '" + nomes_arq[i] + "' busca local...")
-                #execução da busca local
-                t_i = time.time()
+                #execução da primeira busca local
                 lado_cima, lado_baixo, custo_bl = corredor.buscaLocal(lado_cima, lado_baixo, custo_constr)
-                t_f = time.time()
                 print("Concluído!")
-                t_bl = t_f-t_i
                 solucao_cima_bl = []
                 solucao_baixo_bl = []
                 
@@ -822,29 +816,22 @@ while opcao_analise != str(3):
                 
                 disps_cima_bl.append(solucao_cima_bl)
                 disps_baixo_bl.append(solucao_baixo_bl)
-                
                 print("configuracao apos a busca local")
                 print(solucao_cima_bl)
                 print(solucao_baixo_bl)
                 print("custo = " + str(custo_bl))
-                    
-                t_total = t_constr + t_bl    
-                custos_constr.append(custo_constr)
-                custos_bl.append(custo_bl)
-                ts_constr.append(t_constr)
-                ts_bl.append(t_bl)
-                ts_total.append(t_total)
                 
+                #variavel que determina o numero de iteracoes a serem aplicadas
                 iteracoes = 0
-                custo_total = custo_bl
-                custo_corrente_it = 0
-                while iteracoes < 2:
+                custo_total = custo_bl #guarda o custo corrente (referente ao otimo local encontrado na primeira busca local, aplicada na solucao inicial)
+                custo_corrente_it = 0#guarda o custo do otimo local da iteracao atual
+                while iteracoes < 10:
+    
+                    #aplicando a perturbacao-----------------------------------------------------------------
                     print("\nInstância '" + nomes_arq[i] + "' perturbacao...")
                     lado_cima_pert, lado_baixo_pert, custo_pert = corredor.perturbacao(lado_cima, lado_baixo)
                     print("Concluído!")
-                    
-                    print("configuracao apos a " + str(iteracoes + 1) + " perturbacao")
-                    
+                    print("configuracao apos a " + str(iteracoes + 1) + " perturbacao")                
                     solucao_cima_pert = []
                     solucao_baixo_pert =[]
                     for j in lado_cima_pert:
@@ -856,36 +843,41 @@ while opcao_analise != str(3):
                     print(solucao_baixo_pert)
                     print("custo = " + str(custo_pert))
                     custo_corrente_it = custo_pert
+                    #----------------------------------------------------------------------------------------
                     
+                    #aplicando busca local-------------------------------------------------------------------
                     print("\nInstância '" + nomes_arq[i] + "' segunda busca local...")
                     lado_cima_pert, lado_baixo_pert, custo_pert = corredor.buscaLocal(lado_cima_pert, lado_baixo_pert, custo_constr)
                     print("Concluído!")
-                    
-                    
                     print("configuracao apos a " + str(iteracoes + 1) + " busca local")
                     for j in lado_cima_pert:
                         solucao_cima_pert.append(j.getId())
                         
                     for j in lado_baixo_pert:
                         solucao_baixo_pert.append(j.getId())
+                    #reutilizando as variaveis solucao_cima_pert, solucao_baixo_pert, custo_pert
                     print(solucao_cima_pert)
                     print(solucao_baixo_pert)
                     print("custo = " + str(custo_pert))
                     custo_corrente_it = custo_pert
                 
                     #funcao criterio de aceitacao
+                    #solucoes melhores sempre sao aceitas
                     if(custo_corrente_it <= custo_total):
                         custo_total = custo_corrente_it
                     else:
-                        if(custo_corrente_it - custo_total < 100): #um delta T que eu criei
+                        #solucoes piores podem ser aceitas, se o custo corrente for pelo menos 90% do novo custo
+                        res = custo_total / custo_corrente_it
+                        if(res >= 0.90):
                             custo_total = custo_corrente_it
                     
-                    custos.append(custo_total)                                        
-                    t_final_ils = time.time()
-                    t_ils = t_final_ils - t_inicial_ils
-                    tempos.append(t_ils)
-                    iteracoes = iteracoes + 1
+                    custos.append(custo_total) #guarda o custo resultante dessa iteracao na lista de custos                                        
+                    iteracoes = iteracoes + 1 #passa para a proxima iteracao
 
+                t_final_ils = time.time()
+                t_ils = t_final_ils - t_inicial_ils #calcula o tempo necessario para as 10 execucoes de cada instancia
+                
+                #calcula o custo medio, e recupera o menor custo obtido
                 s = 0
                 menor = custos[0]
                 aux = 0
@@ -894,18 +886,14 @@ while opcao_analise != str(3):
                     aux = k
                     if(aux < menor):
                         menor = aux
-                        
-                s = s / 2
+                s = s / 10
+                
                 print("\nDADOS FINAIS: Instância '" + nomes_arq[i] + "'")
                 print("a media dos custos para essa instancia foi: " + str(s))
                 print("o menor custo para essa instancia foi: " + str(menor))
-                s = 0
-                for k in tempos:
-                    s += k
-                s = s / 2
-                print("a media dos tempos para essa instancia foi: " + str(s))                
-                #zera pras proximas instancias
-                tempos = [] 
+                print("o tempo de execucao para essa instancia foi: " + str(t_ils))                
+                
+                #zera os custos para a proxima instancia
                 custos = []
                 arquivo.close()
     else:
