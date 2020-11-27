@@ -891,7 +891,12 @@ while opcao_analise != str(3):
                 print("\nDADOS FINAIS: Instância '" + nomes_arq[i] + "'")
                 print("a media dos custos para essa instancia foi: " + str(s))
                 print("o menor custo para essa instancia foi: " + str(menor))
-                print("o tempo de execucao para essa instancia foi: " + str(t_ils))                
+                print("o tempo de execucao para essa instancia foi: " + str(t_ils))    
+                print()
+                print("--------------------------------------------------------------")
+                print()
+                print()
+                
                 
                 #zera os custos para a proxima instancia
                 custos = []
